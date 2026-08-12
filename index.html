@@ -91,6 +91,39 @@ h1.headline .accent{color:var(--red);}
 .grid{display:grid; gap:16px;}
 .g2{grid-template-columns:1fr 1fr;}
 .g3{grid-template-columns:repeat(3,1fr);}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g5{grid-template-columns:repeat(5,1fr);}
+
+.bars{display:flex; flex-direction:column; gap:14px; margin-top:6px;}
+.bar-row{display:grid; grid-template-columns:210px 1fr 84px; align-items:center; gap:14px;}
+.bar-label{font-size:13px; color:var(--ink);}
+.bar-track{height:9px; background:var(--panel-2); border-radius:1px; overflow:hidden;}
+.bar-fill{height:100%; background:var(--ink-faint);}
+.bar-fill.hi{background:var(--red);}
+.bar-val{font-size:12.5px; color:var(--ink-dim); text-align:right; font-variant-numeric:tabular-nums;}
+
+.persona-detail{display:grid; grid-template-columns:.85fr 1.4fr; gap:52px; align-items:center; flex:1;}
+.persona-portrait{
+  aspect-ratio:3/4; border:1px solid var(--line-strong); border-radius:2px;
+  display:flex; align-items:flex-end; padding:22px; position:relative; overflow:hidden;
+  background:var(--panel);
+}
+.persona-portrait::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--red);}
+.persona-name{font-family:var(--font-display); font-size:26px; font-weight:700; text-transform:uppercase;}
+.persona-role{font-size:12.5px; color:var(--ink-dim); margin-top:2px;}
+.persona-facts{display:flex; flex-direction:column; gap:0;}
+.pf-row{display:grid; grid-template-columns:140px 1fr; gap:16px; align-items:start; padding:12px 0; border-bottom:1px solid var(--line);}
+.pf-label{font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); padding-top:2px; font-weight:600;}
+.pf-val{font-size:14.5px; color:var(--ink); line-height:1.5;}
+
+.proj-flow{display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:14px; align-items:center; margin-top:14px;}
+.proj-box{border:1px solid var(--line); border-radius:2px; padding:22px; background:var(--panel); text-align:left;}
+.proj-box.hi{border-color:var(--red-line); background:var(--red-soft);}
+.proj-box .pb-label{font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); font-weight:600;}
+.proj-box .pb-val{font-family:var(--font-display); font-size:30px; font-weight:700; margin-top:8px; color:var(--ink);}
+.proj-box.hi .pb-val{color:var(--red);}
+.proj-box .pb-sub{font-size:12px; color:var(--ink-dim); margin-top:6px; line-height:1.4;}
+.proj-arrow{color:var(--ink-faint); font-size:20px;}
 
 .card{background:var(--panel); border:1px solid var(--line); border-radius:2px; padding:20px 22px;}
 .card.accent{border-color:var(--red-line); background:var(--red-soft);}
@@ -154,13 +187,18 @@ hr.rule{border:none; border-top:1px solid var(--line); margin:16px 0;}
 @media (max-width: 760px){
   html,body{overflow:auto;}
   .slide{overflow-y:auto; -webkit-overflow-scrolling:touch;}
-  .g2,.g3,.persona-grid{grid-template-columns:1fr;}
+  .g2,.g3,.g4,.g5,.persona-grid{grid-template-columns:1fr;}
   .two-col{grid-template-columns:1fr; gap:24px;}
   .antes-depois{grid-template-columns:1fr;}
   .antes-depois .arrow-mid{transform:rotate(90deg); justify-self:center;}
   .phase-row{grid-template-columns:1fr !important;}
   .funnel-row{grid-template-columns:1fr; gap:14px;}
   .funnel-step{border-top:none; border-left:3px solid var(--red); padding:0 0 0 16px;}
+  .persona-detail{grid-template-columns:1fr; gap:22px;}
+  .persona-portrait{aspect-ratio:16/9;}
+  .proj-flow{grid-template-columns:1fr; gap:10px;}
+  .proj-arrow{transform:rotate(90deg); justify-self:center;}
+  .bar-row{grid-template-columns:110px 1fr 56px; gap:8px;}
   .scroll-note{display:none;}
   .counter{bottom:10px; right:16px;}
   .slide{padding:40px 20px 40px;}
@@ -185,146 +223,221 @@ hr.rule{border:none; border-top:1px solid var(--line); margin:16px 0;}
   <div class="source">Documento de trabalho · Agosto de 2026</div>
 </section>
 
-<!-- 2 MERCADO -->
+<!-- 2 AGENDA -->
 <section class="slide">
-  <div class="kicker">O mercado</div>
-  <h1 class="headline">Está crescendo, e ninguém fala com o comércio</h1>
+  <div class="kicker">Como vamos conversar hoje</div>
+  <h1 class="headline">Cinco paradas</h1>
+  <div class="slide-body">
+    <div class="phase-row" style="grid-template-columns:repeat(3,1fr); row-gap:26px; max-width:760px;">
+      <div class="phase"><span class="ph-num">01</span><h3>Mercado</h3><p>Onde a segurança eletrônica está indo</p></div>
+      <div class="phase"><span class="ph-num">02</span><h3>Diagnóstico</h3><p>O que funciona e o que precisa melhorar</p></div>
+      <div class="phase"><span class="ph-num">03</span><h3>Estratégia</h3><p>Pra quem vamos falar, e como</p></div>
+      <div class="phase"><span class="ph-num">04</span><h3>Execução</h3><p>O que muda no dia a dia</p></div>
+      <div class="phase"><span class="ph-num">05</span><h3>Resultado</h3><p>Como vamos saber se deu certo</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 CONTEXTO DE MERCADO -->
+<section class="slide">
+  <div class="kicker">Contexto de mercado</div>
+  <h1 class="headline">O setor está crescendo — e a GSC pode crescer junto</h1>
   <div class="slide-body">
     <div class="stat-row">
       <div class="stat-big">R$14<span class="u">bilhões</span></div>
-      <div class="stat-cap">faturados por empresas de segurança eletrônica no Brasil em 2024 — alta de 16,1% em um ano</div>
+      <div class="stat-cap">faturados por empresas de segurança eletrônica no Brasil em 2024 — alta de <b style="color:var(--ink);">16,1%</b> em um ano</div>
     </div>
-    <div class="card accent" style="max-width:700px; margin-top:8px;">
-      <p style="color:var(--ink); font-size:15px;">Nenhum concorrente da região comunica uma oferta clara para lojas e comércio. A GSC já tem os produtos certos para ser a primeira a ocupar esse espaço.</p>
+    <div class="grid g2" style="max-width:820px; margin-top:6px;">
+      <div class="card"><h3>Facial e IA em alta</h3><p>Reconhecimento facial e câmeras com inteligência artificial são a aposta do setor para 2026 — é o que a GSC já vende.</p></div>
+      <div class="card"><h3>Menos gente, mais tecnologia</h3><p>O mercado caminha para monitoramento automático, com resposta humana só quando precisa.</p></div>
     </div>
   </div>
   <div class="source">Fonte: Revista Prédio Inteligente, 2026</div>
 </section>
 
-<!-- 3 DIAGNÓSTICO -->
+<!-- 4 CONCORRENTES -->
 <section class="slide">
-  <div class="kicker">Diagnóstico</div>
-  <h1 class="headline">Os produtos certos. Um site que precisa de ajuste.</h1>
+  <div class="kicker">Quem mais disputa a região</div>
+  <h1 class="headline">Todo concorrente fala com condomínio. Nenhum fala com comércio.</h1>
   <div class="slide-body">
-    <div class="two-col">
-      <div>
-        <div class="tag" style="margin-bottom:12px;">O que já funciona</div>
-        <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
-          <li style="font-size:15px; color:var(--ink-dim);">— 26 anos de mercado e portfólio completo</li>
-          <li style="font-size:15px; color:var(--ink-dim);">— App próprio (GSC Connect) já usado em loja e condomínio</li>
-          <li style="font-size:15px; color:var(--ink-dim);">— Site já tem área própria de segurança comercial</li>
-        </ul>
-      </div>
-      <div>
-        <div class="tag red" style="margin-bottom:12px;">O que precisa melhorar</div>
-        <ul style="list-style:none; display:flex; flex-direction:column; gap:10px;">
-          <li style="font-size:15px; color:var(--ink-dim);">— Botão principal do site não funciona</li>
-          <li style="font-size:15px; color:var(--ink-dim);">— WhatsApp com um passo a mais do que precisa</li>
-          <li style="font-size:15px; color:var(--ink-dim);">— Instagram e LinkedIn parados</li>
-        </ul>
-      </div>
+    <div class="grid g5" style="margin-top:4px;">
+      <div class="card"><h3 style="font-size:14px;">VIP Protect</h3><p>Condomínios e empresas</p></div>
+      <div class="card"><h3 style="font-size:14px;">CastSeg Guarulhos</h3><p>Condomínios vertical/horizontal</p></div>
+      <div class="card"><h3 style="font-size:14px;">Security Condomínios</h3><p>Empresas e condomínios</p></div>
+      <div class="card"><h3 style="font-size:14px;">Grupo ARC</h3><p>Condomínios, Guarulhos e região</p></div>
+      <div class="card"><h3 style="font-size:14px;">Arcanjo Vigilância</h3><p>Perímetro, porte nacional</p></div>
+    </div>
+    <div class="card accent" style="margin-top:20px; max-width:720px;">
+      <p style="color:var(--ink); font-size:15px;">Nenhum concorrente mapeado na região comunica uma oferta clara para comércio. Esse espaço está livre — e a GSC já tem os produtos certos para ocupá-lo.</p>
     </div>
   </div>
 </section>
 
-<!-- 4 IDEIA CENTRAL -->
+<!-- 5 RAIO-X (SWOT editado) -->
+<section class="slide">
+  <div class="kicker">Raio-X da GSC</div>
+  <h1 class="headline">Onde estamos bem, onde precisa de cuidado</h1>
+  <div class="slide-body">
+    <div class="grid g4" style="margin-top:4px;">
+      <div class="card"><h3>Forças</h3><ul>
+        <li>Portfólio completo e verticalizado</li>
+        <li>26 anos de mercado</li>
+        <li>App e tecnologia próprios</li>
+      </ul></div>
+      <div class="card"><h3>Fraquezas</h3><ul>
+        <li>Site em correção</li>
+        <li>Verba pequena para duas frentes</li>
+      </ul></div>
+      <div class="card"><h3>Oportunidades</h3><ul>
+        <li>LinkedIn parado — público certo está lá</li>
+      </ul></div>
+      <div class="card"><h3>Riscos</h3><ul>
+        <li>Dividir verba sem foco dilui resultado</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 NORTE ESTRATÉGICO -->
 <section class="slide">
   <div class="kicker">A ideia central</div>
-  <h1 class="headline" style="max-width:17ch;">Vender operação contínua. <span class="accent">Não equipamento.</span></h1>
   <div class="slide-body">
-    <div class="antes-depois" style="max-width:880px;">
+    <h1 class="headline" style="max-width:17ch;">Vender operação contínua. <span class="accent">Não equipamento.</span></h1>
+    <p class="subhead" style="max-width:58ch; margin-top:24px;">A GSC ganha mais projetando e cuidando da segurança de quem toma conta do patrimônio de outra pessoa — o síndico, o dono do comércio — começando onde já tem prova (condomínio) e testando, com cuidado, a porta que ninguém mais abriu: o comércio.</p>
+  </div>
+</section>
+
+<!-- 7 ANTES/DEPOIS -->
+<section class="slide">
+  <div class="kicker">Posicionamento</div>
+  <h1 class="headline">Muda a frase, muda o resultado</h1>
+  <div class="slide-body">
+    <div class="antes-depois" style="max-width:900px;">
       <div class="ad-block"><div class="ad-tag">Hoje</div><div class="ad-text">"Instalamos câmeras e alarmes."</div></div>
       <div class="arrow-mid">&#8594;</div>
-      <div class="ad-block depois"><div class="ad-tag">Proposto</div><div class="ad-text">"Diagnosticamos o risco e cuidamos da sua segurança todos os dias."</div></div>
+      <div class="ad-block depois"><div class="ad-tag">Proposto</div><div class="ad-text">"Diagnosticamos o risco, projetamos a solução certa e cuidamos disso todos os dias."</div></div>
     </div>
   </div>
 </section>
 
-<!-- 5 QUEM VAMOS ATINGIR -->
+<!-- 8 PERSONA COMERCIANTE -->
 <section class="slide">
-  <div class="kicker">Quem vamos atingir</div>
-  <h1 class="headline">Dois públicos, uma operação</h1>
+  <div class="kicker">Persona · Comércio <span class="tag red" style="margin-left:10px;">a validar com você</span></div>
+  <div class="persona-detail">
+    <div class="persona-portrait">
+      <div><div class="persona-name">Marcos</div><div class="persona-role">Dono ou responsável por um comércio independente ou rede regional pequena</div></div>
+    </div>
+    <div class="persona-facts">
+      <div class="pf-row"><div class="pf-label">Rotina</div><div class="pf-val">Uma loja independente ou rede de até 10 unidades na Grande São Paulo — não é o público de rede grande, que compra por licitação</div></div>
+      <div class="pf-row"><div class="pf-label">Dor</div><div class="pf-val">"Tenho câmera, mas não tenho monitoramento de verdade" — perdas seguem acontecendo</div></div>
+      <div class="pf-row"><div class="pf-label">O que trava a decisão</div><div class="pf-val">Custo por unidade, medo de parar o comércio para instalar, dúvida se realmente compensa</div></div>
+      <div class="pf-row"><div class="pf-label">O que convence</div><div class="pf-val">Ver o comércio de qualquer lugar pelo app GSC Connect, com aviso automático de invasão — a GSC já entrega isso, só falta comunicar</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 MAPA DE CONTEÚDO -->
+<section class="slide">
+  <div class="kicker">O que vamos falar, sempre</div>
+  <h1 class="headline">Três conversas, sempre as mesmas</h1>
   <div class="slide-body">
-    <div class="persona-grid">
-      <div class="persona-card">
-        <div class="pname">Síndico</div>
-        <div class="prole">Condomínio</div>
-        <div class="pdor">Quer <b>menos ocorrência e um fornecedor só</b> para resolver — não vários fragmentados.</div>
-      </div>
-      <div class="persona-card">
-        <div class="pname">Administradora</div>
-        <div class="prole">Condomínio</div>
-        <div class="pdor">Quer um <b>parceiro técnico confiável</b> para toda a carteira de condomínios.</div>
-      </div>
-      <div class="persona-card">
-        <div class="pname">Comerciante</div>
-        <div class="prole">Loja ou rede pequena, até 10 unidades</div>
-        <div class="pdor">Tem câmera, mas <b>não tem monitoramento de verdade</b> — as perdas continuam.</div>
-      </div>
+    <div class="grid g3" style="margin-top:8px;">
+      <div class="card"><span class="tag">Prova</span><h3 style="margin-top:12px;">26 anos cuidando de patrimônio de terceiros</h3><p style="margin-top:8px;">Cases reais, tempo de mercado, depoimento em vídeo curto</p></div>
+      <div class="card"><span class="tag">Educar</span><h3 style="margin-top:12px;">"Gravar não é monitorar"</h3><p style="margin-top:8px;">Mostrar a diferença entre ter câmera e ter segurança de verdade</p></div>
+      <div class="card"><span class="tag">Convidar</span><h3 style="margin-top:12px;">Análise de segurança grátis</h3><p style="margin-top:8px;">Convite direto: solicite e receba um projeto sob medida</p></div>
+    </div>
+    <div class="phase-row" style="grid-template-columns:1fr 1fr 1fr; margin-top:30px; max-width:760px;">
+      <div class="phase"><span class="ph-num">Descoberta</span><p style="font-size:13.5px;">Ainda não sabe que precisa de projeto</p></div>
+      <div class="phase"><span class="ph-num">Consideração</span><p style="font-size:13.5px;">Já reconheceu o problema, compara fornecedor</p></div>
+      <div class="phase"><span class="ph-num">Ação</span><p style="font-size:13.5px;">Pronto para pedir a análise gratuita</p></div>
     </div>
   </div>
 </section>
 
-<!-- 6 COMO VAMOS ATRAIR -->
+<!-- 10 DEMANDA REAL -->
 <section class="slide">
-  <div class="kicker">Como vamos atrair</div>
-  <h1 class="headline">Google Ads nos termos que já têm gente procurando</h1>
+  <div class="kicker">O que o Google mostra</div>
+  <h1 class="headline" style="font-size:clamp(26px,3.2vw,42px); max-width:26ch;">Quem busca já quer resolver</h1>
   <div class="slide-body">
-    <div class="grid g2" style="max-width:860px;">
-      <div class="card"><h3>Condomínio</h3><p>Termos com demanda comprovada — "controle de acesso facial" e "segurança condomínio" — na Grande São Paulo.</p></div>
-      <div class="card accent"><h3 style="color:var(--red);">Teste no comércio</h3><p><b style="color:var(--ink);">R$500</b> em Google Ads, com página própria — foco em loja independente e rede pequena (até 10 unidades), não rede grande.</p></div>
+    <div class="bars" style="max-width:800px;">
+      <div class="bar-row"><div class="bar-label">Câmeras de vigilância</div><div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div><div class="bar-val">3.600/mês</div></div>
+      <div class="bar-row"><div class="bar-label">Câmeras CFTV</div><div class="bar-track"><div class="bar-fill" style="width:44%;"></div></div><div class="bar-val">1.600/mês</div></div>
+      <div class="bar-row"><div class="bar-label">Controle de acesso facial</div><div class="bar-track"><div class="bar-fill" style="width:36%;"></div></div><div class="bar-val">1.300/mês</div></div>
+      <div class="bar-row"><div class="bar-label">Segurança condomínio</div><div class="bar-track"><div class="bar-fill" style="width:13%;"></div></div><div class="bar-val">480/mês</div></div>
+      <div class="bar-row"><div class="bar-label">Empresa segurança eletrônica</div><div class="bar-track"><div class="bar-fill hi" style="width:6%;"></div></div><div class="bar-val" style="color:var(--red);">210/mês</div></div>
+      <div class="bar-row"><div class="bar-label">Termos específicos de comércio</div><div class="bar-track"><div class="bar-fill" style="width:1%;"></div></div><div class="bar-val">&lt;10/mês</div></div>
     </div>
-    <p class="subhead" style="margin-top:20px; max-width:700px;">O lead cai direto no WhatsApp, com resposta em até 10 minutos.</p>
+    <div class="card accent" style="margin-top:20px; max-width:800px;">
+      <p><b style="color:var(--red);">"Empresa segurança eletrônica"</b> tem baixa concorrência e CPC alto — mercado pouco disputado, alta intenção. Termos específicos de comércio quase não têm busca — por isso o anúncio precisa mostrar o problema, não só esperar a busca.</p>
+    </div>
   </div>
+  <div class="source">Fonte: Planejador de Palavras-chave do Google Ads</div>
 </section>
 
-<!-- 7 FUNIL -->
+<!-- 11 DIFERENCIAÇÃO -->
 <section class="slide">
-  <div class="kicker">Do clique à indicação</div>
-  <h1 class="headline">Um caminho, não ações soltas</h1>
-  <div class="funnel-row">
-    <div class="funnel-step"><span class="fs-num">1</span><h3>Atrair</h3><p>Anúncio leva à página certa</p></div>
-    <div class="funnel-step"><span class="fs-num">2</span><h3>Conversar</h3><p>WhatsApp em até 10 min + prova</p></div>
-    <div class="funnel-step"><span class="fs-num">3</span><h3>Vender</h3><p>Análise grátis → projeto sob medida</p></div>
-    <div class="funnel-step"><span class="fs-num">4</span><h3>Fidelizar</h3><p>Acompanhamento pós-venda</p></div>
-    <div class="funnel-step"><span class="fs-num">5</span><h3>Indicar</h3><p>Cliente satisfeito traz o próximo</p></div>
+  <div class="kicker">Como se diferenciar</div>
+  <h1 class="headline">O nicho inteiro fala igual. A diferença vai ser falar simples com o comércio pequeno.</h1>
+  <div class="slide-body">
+    <div class="grid g2" style="max-width:820px;">
+      <div class="card"><h3>O que todo mundo faz</h3><p>Fala com rede grande, ou é genérico demais para qualquer tipo de comércio.</p></div>
+      <div class="card accent"><h3 style="color:var(--red);">O que a GSC pode fazer</h3><p>Falar direto com quem tem um comércio de porte pequeno ou médio — em linguagem simples, sem prometer o que não pode provar.</p></div>
+    </div>
   </div>
 </section>
 
-<!-- 8 CRONOGRAMA -->
+<!-- 12 INVESTIMENTO EM MÍDIA -->
+<section class="slide">
+  <div class="kicker">Investimento em mídia</div>
+  <h1 class="headline">Um teste direto: R$500 em Google, só para o comércio</h1>
+  <div class="slide-body">
+    <div class="stat-row">
+      <div class="stat-big">R$500</div>
+      <div class="stat-cap">dedicados a validar a resposta do comércio em Google Ads — loja independente e rede pequena, até 10 unidades, não rede grande</div>
+    </div>
+    <div class="card" style="max-width:760px; margin-top:6px;">
+      <p>Esse valor vem acompanhado de uma <b style="color:var(--ink);">página de destino própria para o comércio</b> — separada da página de condomínio, com a linguagem e a oferta certas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 13 CRONOGRAMA -->
 <section class="slide">
   <div class="kicker">Os próximos 90 dias</div>
   <h1 class="headline">Três fases, sem atropelar etapa</h1>
   <div class="slide-body">
     <div class="phase-row">
-      <div class="phase"><span class="ph-num">Mês 1</span><h3>Fundamentos</h3><p>Corrigir o site, publicar a página do comércio, colocar as campanhas no ar</p></div>
-      <div class="phase"><span class="ph-num">Mês 2</span><h3>Validação</h3><p>Ver o que funciona de verdade e ajustar com dado real</p></div>
-      <div class="phase"><span class="ph-num">Mês 3</span><h3>Escala</h3><p>Investir mais no que validou, ativar indicação</p></div>
+      <div class="phase"><span class="ph-num">Mês 1 · Fundamentos</span><p>Corrigir o site, publicar a LP segmentada para B2B (condomínio e comércio) e colocar as campanhas no ar</p></div>
+      <div class="phase"><span class="ph-num">Mês 2 · Validação</span><p>Ver o que está funcionando de verdade e ajustar com base em dado real</p></div>
+      <div class="phase"><span class="ph-num">Mês 3 · Escala</span><p>Investir mais no que validou, ativar indicação dos primeiros clientes</p></div>
     </div>
   </div>
 </section>
 
-<!-- 9 PRÓXIMOS PASSOS -->
+<!-- 14 PROJEÇÃO -->
 <section class="slide">
-  <div class="kicker">Para decidirmos juntos</div>
-  <h1 class="headline">Na primeira semana</h1>
+  <div class="kicker">Cenário do teste de comércio</div>
+  <h1 class="headline">O que R$500 em Google pode trazer</h1>
   <div class="slide-body">
-    <div class="checklist" style="max-width:600px;">
-      <div class="check-item"><div class="check-box"></div><p>Confirmar o valor médio de cada projeto<span>É o número mais importante para travar a meta</span></p></div>
-      <div class="check-item"><div class="check-box"></div><p>Corrigir o botão e o WhatsApp do site<span>Antes de qualquer campanha nova ir ao ar</span></p></div>
-      <div class="check-item"><div class="check-box"></div><p>Publicar a página própria do comércio<span>Pré-requisito do teste em Google</span></p></div>
+    <div class="proj-flow" style="max-width:920px;">
+      <div class="proj-box"><div class="pb-label">Investimento</div><div class="pb-val">R$500</div><div class="pb-sub">teste mensal em Google Ads, comércio</div></div>
+      <div class="proj-arrow">&#8594;</div>
+      <div class="proj-box"><div class="pb-label">Cliques estimados</div><div class="pb-val">33–100</div><div class="pb-sub">com CPC real de R$5 a R$15, conforme o Planejador de Palavras-chave</div></div>
+      <div class="proj-arrow">&#8594;</div>
+      <div class="proj-box hi"><div class="pb-label">Leads estimados</div><div class="pb-val">1–8/mês</div><div class="pb-sub">aplicando taxa de conversão de 3% (cenário conservador) a 8,18% (média do mercado)</div></div>
     </div>
+    <p class="subhead" style="margin-top:22px; max-width:680px;">É uma faixa, não uma promessa — o número real só fecha depois de rodar o teste. Por isso ele é pequeno e controlado: para aprender rápido, sem arriscar o orçamento.</p>
   </div>
+  <div class="source">Fontes: Planejador de Palavras-chave do Google Ads · WordStream, Google Ads Benchmarks 2026</div>
 </section>
 
-<!-- 10 ENCERRAMENTO -->
+<!-- 15 OBRIGADO -->
 <section class="slide">
-  <div class="center-block">
-    <div class="kicker">Ao final do quarter</div>
-    <h1 class="headline" style="max-width:16ch;">A GSC vai saber <span class="accent">quem compra, onde e por quê.</span></h1>
-    <p class="subhead" style="max-width:50ch;">Com um processo repetível para transformar isso em mais propostas e mais receita — em condomínio e em comércio.</p>
+  <div class="center-block" style="align-items:center; width:100%; text-align:center;">
+    <div class="logo-mark" style="margin:0 auto 26px;">G</div>
+    <h1 class="headline" style="max-width:none; text-align:center;">Obrigado</h1>
   </div>
-  <div class="source">GSC Segurança Eletrônica · Replanejamento Estratégico B2B</div>
+  <div class="source" style="text-align:center; width:100%;">GSC Segurança Eletrônica · Replanejamento Estratégico B2B</div>
 </section>
 
 </div>
