@@ -1,5 +1,5 @@
 // Função serverless (Vercel) que responde dúvidas abertas do chat de síndicos.
-// Env: ANTHROPIC_API_KEY (obrigatória), ALLOWED_ORIGIN (opcional, ex.: https://gscseguranca.com.br)
+// Env: GROQ_API_KEY (obrigatória), GROQ_MODEL (opcional), ALLOWED_ORIGIN (opcional, ex.: https://gscseguranca.com.br)
 
 const SYSTEM = `Você é o assistente da GSC Segurança Eletrônica (São Paulo e região, quase 30 anos, equipe própria, monitoramento 24h) falando com síndicos sobre o fim da escala 6x1.
 
@@ -34,23 +34,25 @@ export default async function handler(req, res) {
     : '';
 
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
+        authorization: `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'claude-haiku-5-5',
+        model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
         max_tokens: 400,
-        system: `${SYSTEM}\n\n${ctx}`,
-        messages: [{ role: 'user', content: question.trim() }],
+        temperature: 0.3,
+        messages: [
+          { role: 'system', content: `${SYSTEM}\n\n${ctx}` },
+          { role: 'user', content: question.trim() },
+        ],
       }),
     });
     if (!r.ok) return res.status(502).json({ error: 'upstream' });
     const j = await r.json();
-    return res.status(200).json({ reply: j.content?.[0]?.text || '' });
+    return res.status(200).json({ reply: j.choices?.[0]?.message?.content || '' });
   } catch (e) {
     return res.status(502).json({ error: 'upstream' });
   }
