@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistente GSC — Fim da escala 6x1 no condomínio</title>
+<meta name="description" content="Tire suas dúvidas sobre o fim da escala 6x1 no condomínio e descubra a solução de segurança ideal.">
+<style>
+:root{--bg:#0b1b2e;--panel:#fff;--ink:#14213d;--muted:#5b6b82;--brand:#0b5fff;--brand-d:#0846c2;--bot:#eef2f8;--user:#0b5fff;--ok:#12a150;--line:#dbe3ef}
+@media (prefers-color-scheme:dark){:root{--panel:#111e31;--ink:#e8eef8;--muted:#9bacc4;--bot:#1a2b44;--line:#26405f}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);display:flex;justify-content:center}
+.app{width:100%;max-width:520px;height:100dvh;background:var(--panel);display:flex;flex-direction:column}
+header{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:center}
+.av{width:40px;height:40px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;flex:none}
+header b{display:block}header small{color:var(--muted)}
+.bar{height:3px;background:var(--line)}.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .4s}
+#log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+.m{max-width:86%;padding:10px 14px;border-radius:16px;white-space:pre-wrap;word-wrap:break-word}
+.m.bot{background:var(--bot);border-bottom-left-radius:4px;align-self:flex-start}
+.m.me{background:var(--user);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.m a{color:inherit;font-weight:600}
+.typing{display:flex;gap:4px;padding:14px}.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:b 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+.opts{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:100%}
+.opts button,.cta{font:inherit;border:1.5px solid var(--brand);background:transparent;color:var(--brand);padding:9px 14px;border-radius:999px;cursor:pointer;text-align:left}
+.opts button:hover{background:var(--brand);color:#fff}
+.opts button.sel{background:var(--brand);color:#fff}
+.opts .go{background:var(--ok);border-color:var(--ok);color:#fff}
+.card{border:1px solid var(--line);border-radius:14px;padding:12px 14px;align-self:flex-start;max-width:92%;background:var(--panel)}
+.card h4{margin:0 0 4px}.card p{margin:2px 0;color:var(--muted);font-size:14px}
+.card.top{border-color:var(--brand);box-shadow:0 0 0 2px color-mix(in srgb,var(--brand) 20%,transparent)}
+.tag{font-size:12px;color:#fff;background:var(--brand);border-radius:6px;padding:1px 7px;margin-left:6px}
+.cta{display:inline-block;text-decoration:none;background:var(--ok);border-color:var(--ok);color:#fff;font-weight:700;padding:13px 20px;text-align:center}
+form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
+input{flex:1;font:inherit;padding:11px 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:inherit}
+input:focus{outline:2px solid var(--brand);border-color:transparent}
+form button{font:inherit;border:0;background:var(--brand);color:#fff;border-radius:999px;padding:0 18px;cursor:pointer}
+.fine{font-size:11.5px;color:var(--muted);text-align:center;padding:0 12px 8px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><div class="av">G</div><div><b>Assistente GSC</b><small>Fim da escala 6x1 no condomínio</small></div></header>
+  <div class="bar"><i id="prog"></i></div>
+  <div id="log" aria-live="polite"></div>
+  <form id="f" autocomplete="off"><input id="t" placeholder="Digite sua dúvida ou resposta…" aria-label="Mensagem"><button>Enviar</button></form>
+  <div class="fine">Informações gerais, sem valor de parecer jurídico. Confirme decisões trabalhistas com seu advogado ou administradora.</div>
+</div>
+
+<script>
+/* ============ CONFIG ============ */
+const CONFIG = {
+  whatsapp: '5511991554235',              // WhatsApp do botão "Fale com um especialista" do site
+  aiEndpoint: '/api/chat',                // função serverless (api/chat.js). Se falhar, usa o FAQ local.
+  leadWebhook: '',                        // URL de Make/Zapier/n8n/Supabase para receber o lead (JSON). Vazio = só dataLayer.
+  company: 'GSC Segurança'
+};
+
+/* ============ BASE DE CONHECIMENTO (FAQ local e fallback) ============ */
+const SRC = {
+  ag:'https://agenciabrasil.ebc.com.br/politica/noticia/2026-10/congresso-promulga-emenda-do-fim-da-6x1-escala-5x2-comeca-em-60-dias',
+  sen:'https://www12.senado.leg.br/noticias/materias/2026/10/16/congresso-promulga-o-fim-da-escala-6x1-e-aposentadoria-de-agentes-de-saude'
+};
+const FAQ = [
+ {k:['o que muda','mudou','emenda','pec','6x1','5x2','promulg'],
+  a:`Em 16/10/2026 o Congresso promulgou a emenda que acaba com a escala 6x1. A jornada passa para 5x2, com limite de 42h semanais sem redução de salário, e depois chega a 40h. As empresas têm 60 dias a partir da promulgação para a primeira etapa (por volta de 15/12/2026).\nFontes: Agência Brasil ${SRC.ag} e Agência Senado ${SRC.sen}`},
+ {k:['prazo','quando','vigor','começa','data','dezembro'],
+  a:`Primeira etapa: 5x2 e 42h em até 60 dias da promulgação (16/10/2026), ou seja, em torno de 15/12/2026. Segunda etapa: 40h, cerca de um ano depois. Confirme a data exata com seu jurídico.\nFonte: ${SRC.ag}`},
+ {k:['12x36','12 x 36','12 por 36','plantão','plantao'],
+  a:`A emenda admite, por convenção ou acordo coletivo, regime compensatório diferente da 5x2. Ainda não está claro como a 12x36 das portarias se encaixa, e isso depende de regulamentação e da convenção coletiva da sua categoria. Fale com seu advogado ou o sindicato antes de mudar qualquer escala.`},
+ {k:['custo','taxa','condominial','aument','quanto','folha','orçamento','orcamento'],
+  a:`A AABIC estima impacto de até 15% no orçamento de condomínios com equipe própria, já que a folha costuma representar de 55% a 60% das despesas. É estimativa de entidade do setor e varia muito conforme o número de postos e a escala atual. Posso montar um comparativo para o seu caso.`},
+ {k:['folguista','contratar','funcionário','funcionario','porteiro','zelador','quadro'],
+  a:`Quem mantém portaria 24h com equipe própria tende a precisar de mais horas de cobertura (folguista ou novas contratações) para o mesmo posto. Outra rota é reduzir a dependência de posto fixo com portaria remota ou híbrida, controle de acesso e câmeras monitoradas. Quer que eu compare as opções para o seu condomínio?`},
+ {k:['remota','virtual','autônoma','autonoma','portaria'],
+  a:`Portaria remota: uma central monitora entradas, saídas e câmeras 24h, e o morador libera visitantes pelo app. Funciona melhor combinada com controle de acesso (facial/biometria), câmeras e alarme. A GSC projeta, instala e monitora. Posso indicar o formato ideal pelo tamanho e perfil do seu condomínio.`},
+ {k:['legal','jurídico','juridico','demitir','demissão','demissao','convenção','convencao','sindicato','advogado'],
+  a:`Questões de demissão, mudança de escala e convenção coletiva exigem parecer do seu advogado ou da administradora. Eu ajudo com o lado de segurança e operação: como manter a cobertura 24h com custo previsível.`},
+];
+function faq(q){
+  q=q.toLowerCase();let best=null,sc=0;
+  for(const f of FAQ){const s=f.k.filter(k=>q.includes(k)).length;if(s>sc){sc=s;best=f}}
+  return best?best.a:null;
+}
+
+/* ============ CATÁLOGO + RECOMENDAÇÃO ============ */
+const PRODUCTS={
+ remota:{n:'Portaria remota / híbrida',d:'Central 24h controla acessos e imagens. Reduz dependência de posto fixo e dá previsibilidade de custo.'},
+ facial:{n:'Controle de acesso facial',d:'Entrada de moradores e visitantes autorizados em milissegundos, com registro de todos os acessos.'},
+ cftv:{n:'CFTV e postes com câmeras',d:'Cobertura de áreas comuns e do entorno, com imagens em tempo real e acesso remoto.'},
+ alarme:{n:'Alarme monitorado + cerca elétrica',d:'Sensores perimetrais avisam a Central 24h quando há violação, mesmo nos horários descobertos.'},
+ connect:{n:'Condomínio conectado + app GSC Connect',d:'Integra acesso, câmeras e alarmes numa só tela para o síndico e a administração.'},
+ panico:{n:'Smart Panic e detecção de incêndio',d:'Acionamento de emergência e detecção para proteger moradores quando há menos gente na portaria.'},
+ manut:{n:'Manutenção preventiva e corretiva',d:'Revisões periódicas e suporte técnico para o sistema não parar.'}
+};
+function recommend(a){
+  const s={remota:0,facial:0,cftv:0,alarme:0,connect:0,panico:0,manut:0};
+  const dor=a.dores||[];
+  if(['propria','terceirizada'].includes(a.modelo)){s.remota+=4;s.facial+=2}
+  if(a.modelo==='remota'){s.facial+=2;s.cftv+=2;s.manut+=2}
+  if(a.modelo==='sem'){s.alarme+=2;s.cftv+=2;s.facial+=1}
+  if(a.postos==='3+'||a.unid==='151-300'||a.unid==='300+'){s.remota+=2;s.connect+=2}
+  if(a.unid==='ate50'){s.alarme+=1;s.facial+=1}
+  if(dor.includes('custo')){s.remota+=3}
+  if(dor.includes('cobertura')){s.alarme+=3;s.cftv+=2;s.panico+=2;s.remota+=1}
+  if(dor.includes('acessos')){s.facial+=3;s.connect+=1}
+  if(dor.includes('gestao')){s.connect+=3}
+  if(dor.includes('cameras')){s.cftv+=3;s.manut+=2}
+  return Object.entries(s).filter(e=>e[1]>0).sort((x,y)=>y[1]-x[1]).slice(0,3).map(e=>e[0]);
+}
+function impactText(a){
+  if(a.modelo==='propria')return `Com equipe própria, é o perfil que mais sente a mudança. A folha costuma ser de 55% a 60% do orçamento e a AABIC estima impacto de até 15% no total (estimativa do setor).`;
+  if(a.modelo==='terceirizada')return `Com portaria terceirizada, a empresa vai repassar o custo extra de cobertura no contrato. Vale renegociar já, com alternativa tecnológica na mesa.`;
+  if(a.modelo==='remota')return `Você já está um passo à frente: portaria remota reduz o impacto direto da mudança. O ganho agora é reforçar acesso e câmeras para ganhar eficiência.`;
+  return `Sem portaria 24h, o impacto na folha é menor, mas a mudança reforça a importância de acesso controlado e monitoramento nos horários descobertos.`;
+}
+
+/* ============ MOTOR DA CONVERSA ============ */
+const log=document.getElementById('log'),inp=document.getElementById('t'),prog=document.getElementById('prog');
+const A={};let waiting=null,step=0;const TOTAL=11;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const linkify=s=>esc(s).replace(/https?:\/\/[^\s)]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">fonte</a>`);
+function scroll(){log.scrollTop=log.scrollHeight}
+function track(ev,p={}){try{(window.dataLayer=window.dataLayer||[]).push({event:'chat_sindico_'+ev,...p})}catch(e){}}
+function progress(){step++;prog.style.width=Math.min(100,step/TOTAL*100)+'%'}
+function add(cls,html){const d=document.createElement('div');d.className=cls;d.innerHTML=html;log.appendChild(d);scroll();return d}
+async function bot(t,ms=550){const ty=add('m bot typing','<i></i><i></i><i></i>');await sleep(ms);ty.remove();return add('m bot',linkify(t))}
+function me(t){add('m me',esc(t))}
+
+function choice(options,{multi=false}={}){
+  return new Promise(res=>{
+    const box=add('opts','');const chosen=new Set();let done;
+    options.forEach(([v,l])=>{
+      const b=document.createElement('button');b.textContent=l;
+      b.onclick=()=>{
+        if(!multi){box.remove();me(l);waiting=null;res(v);return}
+        chosen.has(v)?(chosen.delete(v),b.classList.remove('sel')):(chosen.add(v),b.classList.add('sel'));
+      };box.appendChild(b);
+    });
+    if(multi){
+      const g=document.createElement('button');g.className='go';g.textContent='Continuar →';
+      g.onclick=()=>{if(!chosen.size)return;const ls=options.filter(o=>chosen.has(o[0])).map(o=>o[1]);box.remove();me(ls.join(' · '));waiting=null;res([...chosen])};
+      box.appendChild(g);
+    }
+    waiting={type:'choice'};
+  });
+}
+function ask(placeholder,validate){
+  return new Promise(res=>{
+    inp.placeholder=placeholder;inp.focus();
+    waiting={type:'text',validate,res};
+  });
+}
+
+document.getElementById('f').onsubmit=async e=>{
+  e.preventDefault();const v=inp.value.trim();if(!v)return;inp.value='';
+  if(waiting&&waiting.type==='text'){
+    const ok=waiting.validate?waiting.validate(v):true;
+    me(v);
+    if(ok===true||ok===undefined){const w=waiting;waiting=null;inp.placeholder='Digite sua dúvida…';w.res(v)}
+    else await bot(ok,300);
+    return;
+  }
+  me(v);await answer(v);
+};
+
+async function answer(q){
+  track('duvida',{q:q.slice(0,120)});
+  let r=null;
+  if(CONFIG.aiEndpoint){
+    try{
+      const c=new AbortController();setTimeout(()=>c.abort(),12000);
+      const resp=await fetch(CONFIG.aiEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},signal:c.signal,
+        body:JSON.stringify({question:q,context:A})});
+      if(resp.ok){const j=await resp.json();r=j.reply}
+    }catch(e){}
+  }
+  if(!r)r=faq(q);
+  if(!r)r='Boa pergunta. Para responder com precisão, o melhor é falar com um especialista da GSC. Eu já deixo seu contexto anotado para ele.';
+  await bot(r,700);
+  if(waiting&&waiting.type==='choice')await bot('Voltando: escolha uma das opções acima para continuarmos.',300);
+  else if(waiting&&waiting.type==='text')await bot('Quando puder, responda a pergunta anterior para eu seguir.',300);
+}
+
+function wa(text){return `https://api.whatsapp.com/send/?phone=${CONFIG.whatsapp}&text=${encodeURIComponent(text)}`}
+function waMessage(){
+  const L={propria:'equipe própria',terceirizada:'terceirizada',remota:'portaria remota/híbrida',sem:'sem portaria 24h'};
+  const D={custo:'custo da folha',cobertura:'cobertura nos horários descobertos',acessos:'controle de acessos',gestao:'gestão/encomendas',cameras:'câmeras/monitoramento'};
+  return `Olá! Sou ${A.nome}${A.condo?`, do ${A.condo}`:''}. Conversei com o assistente sobre o fim da escala 6x1.\n`+
+   `Perfil: ${A.perfil} | Unidades: ${A.unidTxt} | Portaria: ${L[A.modelo]||'-'}${A.postos?` (${A.postos} posto(s))`:''}\n`+
+   `Preocupações: ${(A.dores||[]).map(d=>D[d]).join(', ')||'-'}\nPrazo: ${A.prazoTxt}\n`+
+   `Interesse: ${(A.rec||[]).map(r=>PRODUCTS[r].n).join('; ')}.\nGostaria de falar com um especialista.`;
+}
+function sendLead(){
+  const payload={...A,origem:location.href,utm:location.search,ts:new Date().toISOString()};
+  track('lead',{perfil:A.perfil,unid:A.unid,modelo:A.modelo,prazo:A.prazo,rec:(A.rec||[])[0]});
+  if(CONFIG.leadWebhook){try{navigator.sendBeacon(CONFIG.leadWebhook,new Blob([JSON.stringify(payload)],{type:'text/plain'}))}catch(e){}}
+}
+
+/* ============ FLUXO ============ */
+async function main(){
+  track('inicio');
+  await bot('Olá! 👋 Sou o assistente da GSC Segurança.\nO fim da escala 6x1 já foi promulgado e vai mexer com a portaria e o orçamento de muito condomínio.');
+  await bot('Em 2 minutos eu tiro suas dúvidas e mostro as opções para o seu condomínio. Você também pode digitar qualquer pergunta a qualquer momento.');
+  const ini=await choice([['muda','📅 O que muda para o condomínio'],['impacto','💰 Quero ver o impacto e as opções'],['esp','🙋 Falar direto com especialista']]);
+  track('inicio_escolha',{ini});progress();
+  if(ini==='muda'){
+    await bot(faq('o que muda'),800);
+    await bot(faq('custo'),800);
+    await bot(faq('12x36'),800);
+  }
+  await bot('Para indicar o melhor caminho, preciso entender seu condomínio. São poucas perguntas.');
+
+  A.perfil=await choice([['Síndico morador','Síndico morador'],['Síndico profissional','Síndico profissional'],['Conselheiro','Conselheiro'],['Administradora','Administradora']]);progress();
+  await bot('Quantas unidades tem o condomínio?',350);
+  const un=[['ate50','Até 50'],['51-150','51 a 150'],['151-300','151 a 300'],['300+','Mais de 300']];
+  A.unid=await choice(un);A.unidTxt=un.find(u=>u[0]===A.unid)[1];progress();
+  await bot('Como funciona a portaria hoje?',350);
+  A.modelo=await choice([['propria','Equipe própria (CLT)'],['terceirizada','Empresa terceirizada'],['remota','Remota ou híbrida'],['sem','Sem portaria 24h']]);progress();
+  if(A.modelo==='propria'||A.modelo==='terceirizada'){
+    await bot('Quantos postos de portaria 24h?',350);
+    A.postos=await choice([['1','1 posto'],['2','2 postos'],['3+','3 ou mais']]);progress();
+    await bot('Qual a escala atual dos porteiros?',350);
+    A.escala=await choice([['12x36','12x36'],['6x1','6x1 / 44h'],['outra','Outra / não sei']]);progress();
+  }else step+=2,progress();
+  await bot(impactText(A),900);
+  await bot('O que mais pesa para você hoje? Pode marcar mais de uma.',450);
+  A.dores=await choice([['custo','Custo da folha'],['cobertura','Cobertura nos horários descobertos'],['acessos','Controle de visitantes e entregadores'],['gestao','Encomendas e gestão do dia a dia'],['cameras','Câmeras antigas ou sem monitoramento']],{multi:true});progress();
+  await bot('O condomínio fica em São Paulo ou Grande São Paulo?',350);
+  A.regiao=await choice([['sp','Sim'],['fora','Outra região']]);progress();
+  if(A.regiao==='fora')await bot('A GSC atua em São Paulo e região com equipe própria. Se estiver fora, o especialista confirma se consegue atender.',600);
+  await bot('Em quanto tempo você pretende decidir?',350);
+  const pz=[['cotando','Já estou cotando'],['30d','Até 30 dias'],['90d','2 a 3 meses'],['pesquisa','Só pesquisando']];
+  A.prazo=await choice(pz);A.prazoTxt=pz.find(p=>p[0]===A.prazo)[1];progress();
+
+  A.rec=recommend(A);
+  await bot('Pronto! Com base no que você contou, estas são as soluções que mais fazem sentido:',900);
+  A.rec.forEach((k,i)=>add('card'+(i===0?' top':''),`<h4>${PRODUCTS[k].n}${i===0?'<span class="tag">melhor encaixe</span>':''}</h4><p>${PRODUCTS[k].d}</p>`));
+  track('recomendacao',{rec:A.rec.join(',')});
+  await bot('Quer receber um plano personalizado, com a combinação ideal e uma estimativa para o seu condomínio? Me diga seu nome:',900);
+  A.nome=await ask('Seu nome',v=>v.length>=2||'Pode digitar seu nome?');
+  if(A.nome.split(' ').length>1)A.nome=A.nome.split(' ')[0];
+  await bot(`Prazer, ${A.nome}! Qual o nome do condomínio? (pode pular digitando "-")`,400);
+  A.condo=await ask('Nome do condomínio');if(A.condo==='-')A.condo='';
+  await bot('E seu WhatsApp com DDD, para o especialista te enviar o plano:',400);
+  A.tel=await ask('(11) 99999-9999',v=>{const d=v.replace(/\D/g,'');return (d.length===10||d.length===11||d.length===12||d.length===13)||'Confere o número com DDD? Ex.: (11) 99999-9999'});
+  A.tel=A.tel.replace(/\D/g,'');progress();
+  sendLead();
+  await bot(`Perfeito, ${A.nome}! Montei um resumo com tudo que você me contou. Ao tocar no botão, ele já vai pronto para o WhatsApp de um especialista da GSC, sem você precisar repetir nada.`,800);
+  const d=add('m bot','');d.innerHTML=`<a class="cta" href="${wa(waMessage())}" target="_blank" rel="noopener" id="wa">💬 Receber meu plano no WhatsApp</a>`;
+  document.getElementById('wa').onclick=()=>track('whatsapp_click');
+  await bot('Enquanto isso, se tiver qualquer dúvida sobre a 6x1, é só digitar aqui.',700);
+}
+main();
+</script>
+</body>
+</html>
