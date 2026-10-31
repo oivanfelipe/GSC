@@ -124,7 +124,7 @@ function impactText(a){
 
 /* ============ MOTOR DA CONVERSA ============ */
 const log=document.getElementById('log'),inp=document.getElementById('t'),prog=document.getElementById('prog');
-const A={};let waiting=null,step=0;const TOTAL=11;
+const A={};let waiting=null,step=0;const TOTAL=12;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const linkify=s=>esc(s).replace(/https?:\/\/[^\s)]+/g,u=>`<a href="${u}" target="_blank" rel="noopener">fonte</a>`);
@@ -199,9 +199,9 @@ function waMessage(){
    `Preocupações: ${(A.dores||[]).map(d=>D[d]).join(', ')||'-'}\nPrazo: ${A.prazoTxt}\n`+
    `Interesse: ${(A.rec||[]).map(r=>PRODUCTS[r].n).join('; ')}.\nGostaria de falar com um especialista.`;
 }
-function sendLead(){
-  const payload={...A,origem:location.href,utm:location.search,ts:new Date().toISOString()};
-  track('lead',{perfil:A.perfil,unid:A.unid,modelo:A.modelo,prazo:A.prazo,rec:(A.rec||[])[0]});
+function sendLead(etapa){
+  const payload={...A,etapa,origem:location.href,utm:location.search,ts:new Date().toISOString()};
+  track('lead_'+etapa,{perfil:A.perfil,unid:A.unid,modelo:A.modelo,prazo:A.prazo,rec:(A.rec||[])[0]});
   if(CONFIG.leadWebhook){try{navigator.sendBeacon(CONFIG.leadWebhook,new Blob([JSON.stringify(payload)],{type:'text/plain'}))}catch(e){}}
 }
 
@@ -209,7 +209,16 @@ function sendLead(){
 async function main(){
   track('inicio');
   await bot('Olá! 👋 Sou o assistente da GSC Segurança.\nO fim da escala 6x1 já foi promulgado e vai mexer com a portaria e o orçamento de muito condomínio.');
-  await bot('Em 2 minutos eu tiro suas dúvidas e mostro as opções para o seu condomínio. Você também pode digitar qualquer pergunta a qualquer momento.');
+  await bot('Para começar, me diz seu nome? Assim já deixo tudo pronto para um especialista da GSC te atender.');
+  A.nome=await ask('Seu nome',v=>v.length>=2||'Pode digitar seu nome?');
+  A.nome=A.nome.split(' ')[0];progress();
+  await bot(`Prazer, ${A.nome}! Qual o seu WhatsApp com DDD? É por lá que você recebe o plano personalizado.`,400);
+  A.tel=await ask('(11) 99999-9999',v=>{const d=v.replace(/\D/g,'');return (d.length>=10&&d.length<=13)||'Confere o número com DDD? Ex.: (11) 99999-9999'});
+  A.tel=A.tel.replace(/\D/g,'');progress();
+  await bot('E qual o nome do condomínio? (se preferir pular, digite "-")',400);
+  A.condo=await ask('Nome do condomínio');if(A.condo==='-')A.condo='';progress();
+  sendLead('cadastro');
+  await bot(`Tudo certo, ${A.nome}! Em 2 minutos eu tiro suas dúvidas e mostro as opções para o seu condomínio. Você também pode digitar qualquer pergunta a qualquer momento.`,600);
   const ini=await choice([['muda','📅 O que muda para o condomínio'],['impacto','💰 Quero ver o impacto e as opções'],['esp','🙋 Falar direto com especialista']]);
   track('inicio_escolha',{ini});progress();
   if(ini==='muda'){
@@ -230,7 +239,7 @@ async function main(){
     A.postos=await choice([['1','1 posto'],['2','2 postos'],['3+','3 ou mais']]);progress();
     await bot('Qual a escala atual dos porteiros?',350);
     A.escala=await choice([['12x36','12x36'],['6x1','6x1 / 44h'],['outra','Outra / não sei']]);progress();
-  }else step+=2,progress();
+  }else{step+=1;progress()}
   await bot(impactText(A),900);
   await bot('O que mais pesa para você hoje? Pode marcar mais de uma.',450);
   A.dores=await choice([['custo','Custo da folha'],['cobertura','Cobertura nos horários descobertos'],['acessos','Controle de visitantes e entregadores'],['gestao','Encomendas e gestão do dia a dia'],['cameras','Câmeras antigas ou sem monitoramento']],{multi:true});progress();
@@ -245,16 +254,8 @@ async function main(){
   await bot('Pronto! Com base no que você contou, estas são as soluções que mais fazem sentido:',900);
   A.rec.forEach((k,i)=>add('card'+(i===0?' top':''),`<h4>${PRODUCTS[k].n}${i===0?'<span class="tag">melhor encaixe</span>':''}</h4><p>${PRODUCTS[k].d}</p>`));
   track('recomendacao',{rec:A.rec.join(',')});
-  await bot('Quer receber um plano personalizado, com a combinação ideal e uma estimativa para o seu condomínio? Me diga seu nome:',900);
-  A.nome=await ask('Seu nome',v=>v.length>=2||'Pode digitar seu nome?');
-  if(A.nome.split(' ').length>1)A.nome=A.nome.split(' ')[0];
-  await bot(`Prazer, ${A.nome}! Qual o nome do condomínio? (pode pular digitando "-")`,400);
-  A.condo=await ask('Nome do condomínio');if(A.condo==='-')A.condo='';
-  await bot('E seu WhatsApp com DDD, para o especialista te enviar o plano:',400);
-  A.tel=await ask('(11) 99999-9999',v=>{const d=v.replace(/\D/g,'');return (d.length===10||d.length===11||d.length===12||d.length===13)||'Confere o número com DDD? Ex.: (11) 99999-9999'});
-  A.tel=A.tel.replace(/\D/g,'');progress();
-  sendLead();
-  await bot(`Perfeito, ${A.nome}! Montei um resumo com tudo que você me contou. Ao tocar no botão, ele já vai pronto para o WhatsApp de um especialista da GSC, sem você precisar repetir nada.`,800);
+  sendLead('qualificado');
+  await bot(`${A.nome}, montei um resumo com tudo que você me contou. Ao tocar no botão, ele já vai pronto para o WhatsApp de um especialista da GSC, sem você precisar repetir nada.`,900);
   const d=add('m bot','');d.innerHTML=`<a class="cta" href="${wa(waMessage())}" target="_blank" rel="noopener" id="wa">💬 Receber meu plano no WhatsApp</a>`;
   document.getElementById('wa').onclick=()=>track('whatsapp_click');
   await bot('Enquanto isso, se tiver qualquer dúvida sobre a 6x1, é só digitar aqui.',700);
