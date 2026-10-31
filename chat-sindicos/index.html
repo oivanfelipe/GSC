@@ -59,7 +59,7 @@ form button:hover{background:var(--brand-d)}
 const CONFIG = {
   whatsapp: '5511991554235',              // WhatsApp do botão "Fale com um especialista" do site
   aiEndpoint: '/api/chat',                // função serverless (api/chat.js). Se falhar, usa o FAQ local.
-  leadWebhook: '',                        // URL de Make/Zapier/n8n/Supabase para receber o lead (JSON). Vazio = só dataLayer.
+  leadWebhook: '',                        // URL do Apps Script (ver apps-script/Code.gs) que grava no Google Sheets. Vazio = só dataLayer.
   company: 'GSC Segurança'
 };
 
@@ -202,7 +202,11 @@ function waMessage(){
 function sendLead(etapa){
   const payload={...A,etapa,origem:location.href,utm:location.search,ts:new Date().toISOString()};
   track('lead_'+etapa,{perfil:A.perfil,unid:A.unid,modelo:A.modelo,prazo:A.prazo,rec:(A.rec||[])[0]});
-  if(CONFIG.leadWebhook){try{navigator.sendBeacon(CONFIG.leadWebhook,new Blob([JSON.stringify(payload)],{type:'text/plain'}))}catch(e){}}
+  if(CONFIG.leadWebhook){
+    const body=JSON.stringify(payload);
+    let ok=false;try{ok=navigator.sendBeacon(CONFIG.leadWebhook,new Blob([body],{type:'text/plain'}))}catch(e){}
+    if(!ok)fetch(CONFIG.leadWebhook,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'text/plain'},body}).catch(()=>{});
+  }
 }
 
 /* ============ FLUXO ============ */
